@@ -1,0 +1,22 @@
+ grammar Regex;
+
+ header {
+     package generated.regex
+ }
+
+expr : base_expr union;
+union : VBAR  base_expr union | EPS;
+base_expr: spec_expr high_expr;
+high_expr: spec_expr high_expr | EPS;
+spec_expr: unit with_star;
+with_star : STAR | EPS;
+unit : LETTER | LPAREN expr RPAREN;
+
+STAR : "\*";
+VBAR : "\|";
+LPAREN: "\(";
+RPAREN: "\)";
+LETTER: "[a-z]+";
+WHITESPACE : "[ \t\r\n]" -> skip ;
+
+

@@ -1,0 +1,27 @@
+grammar Calculator;
+
+header {
+    package generated.calculator
+}
+
+fields [
+var value: Int;
+]
+
+expr : second expr_new(second.value) {result.value = expr_new.value};
+expr_new[acc: Int] : EPS {result.value = acc} | PLUS second expr_new(acc + second.value!!) {result.value = expr_new.value} | MINUS second expr_new(acc - second.value!!) {result.value = expr_new.value};
+second : unar second_new(unar.value) {result.value = second_new.value};
+second_new[acc: Int] : MULTIPLICATION unar second_new(acc * unar.value!!) {result.value = second_new.value} |  DIVISION unar second_new(acc / unar.value!!) {result.value = unar.value} | EPS {result.value = acc};
+unar: MINUS first {result.value = -(first.value)!!} | first { result.value = first.value};
+first : NUMBER {result.value = parseInt(NUMBER.text)} | OPEN expr CLOSE {result.value = expr.value};
+
+DIVISION: "/";
+MINUS: "-";
+PLUS : "\+";
+MULTIPLICATION : "\*";
+NUMBER : "[0-9]+";
+OPEN : "\(";
+CLOSE : "\)";
+WHITESPACE : "[ \t\r\n]" -> skip ;
+
+
