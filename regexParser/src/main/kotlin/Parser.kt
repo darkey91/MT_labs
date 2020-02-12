@@ -27,7 +27,6 @@ import java.time.LocalDateTime
 class Parser {
     private var lexer: LexicalAnalyzer? = null
 
-
     private fun getErrorMessage(token: Token, funcName: String): String = "Unexpected token $token in $funcName"
 
     private fun R(): Tree {

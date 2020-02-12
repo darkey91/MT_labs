@@ -6,22 +6,18 @@ enum class Token {
     START, LPAREN, RPAREN, VBAR, LETTER, STAR, END
 }
 
-class LexicalAnalyzer(private var inStream: InputStream? = null) {
+class LexicalAnalyzer(private var inStream: InputStream) {
     var curToken: Token = Token.START;
     private var currentCharInt: Int = -1
 
     var pointer = 0
 
     private fun nextChar() {
-        if (inStream == null) {
+        /*if (inStream == null) {
             throw ParseException("InputStream wasn't initialized", pointer)
-        }
+        }*/
         ++pointer
-        try {
-            currentCharInt = inStream!!.read()
-        } catch (e: IOException) {
-            throw ParseException(e.message, pointer)
-        }
+        currentCharInt = inStream.read()
     }
 
     fun curChar(): Char = currentCharInt.toChar()
@@ -30,7 +26,9 @@ class LexicalAnalyzer(private var inStream: InputStream? = null) {
         //вообще в regex пробелы норм штучка, если они запрещены, то недопустимы
         nextChar()
 
-        while ( currentCharInt != -1 && curChar().isWhitespace()) {
+        val curCharSeq = curChar().toString()
+
+        while (currentCharInt != -1 && ("[ \\t\\r\\n]".toRegex().matches(curCharSeq))) {
             nextChar()
         }
 
@@ -39,22 +37,21 @@ class LexicalAnalyzer(private var inStream: InputStream? = null) {
             return
         }
 
-        curToken = when (curChar()) {
-            '(' -> {
+        curToken = when {
+            "\\(".toRegex().matches(curCharSeq) -> {
                 Token.LPAREN
             }
-            ')' -> {
+            "\\)".toRegex().matches(curCharSeq) -> {
                 Token.RPAREN
             }
-            '|' -> {
+            "\\|".toRegex().matches(curCharSeq) -> {
                 Token.VBAR
             }
-            '*' -> {
+            "\\*".toRegex().matches(curCharSeq) -> {
                 Token.STAR
             }
             else -> {
                 when {
-
                     curChar() in 'a'..'z' -> {
                         Token.LETTER
                     }
